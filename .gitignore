@@ -2,3 +2,5 @@
 .vscode
 .idea
 /symfony/.env.local
+/symfony/vendor/
+/symfony/var/
