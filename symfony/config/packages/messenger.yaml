@@ -1,0 +1,52 @@
+framework:
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            message_out:
+                dsn: '%env(KAFKA_DSN)%'
+                serializer: App\Serializer\KafkaSerializer\KafkaSerializer
+                options:
+                    flushInterval: 10000
+                    flushRetries: 5
+                    commitAsync: true
+                    receiveTimeout: 10000
+                    topic: 
+                        name: '%env(KAFKA_TOPIC)%'
+                    kafka_conf:
+                        security.protocol: 'sasl_ssl'
+                        ssl.ca.location: '/usr/local/share/ca-certificates/Yandex/YandexCA.crt'
+                        sasl.username: '%env(KAFKA_USERNAME)%'
+                        sasl.password: '%env(KAFKA_PASSWORD)%'
+                        sasl.mechanisms: 'SCRAM-SHA-512'
+
+            message_in:
+                dsn: '%env(KAFKA_DSN)%'
+                serializer: App\Serializer\KafkaSerializer\KafkaSerializer
+                options:
+                    flushInterval: 10000
+                    flushRetries: 5
+                    commitAsync: true
+                    receiveTimeout: 10000
+                    topic:
+                        name: '%env(KAFKA_TOPIC)%'
+                    kafka_conf:
+                        security.protocol: 'sasl_ssl'
+                        ssl.ca.location: '/usr/local/share/ca-certificates/Yandex/YandexCA.crt'
+                        sasl.username: '%env(KAFKA_USERNAME)%'
+                        sasl.password: '%env(KAFKA_PASSWORD)%'
+                        sasl.mechanisms: 'SCRAM-SHA-512'
+                        group.id: '%env(KAFKA_CONSUMER_GROUP)%'
+
+        routing:
+            App\Message\KafkaMessage\KafkaMessage: message_out
+            App\Handler\KafkaHandler\KafkaHandler: message_in 
+
+# when@test:
+#    framework:
+#        messenger:
+#            transports:
+#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
+#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
+#                async: 'in-memory://'
