@@ -8,3 +8,14 @@
 ## Отправка и прием сообщений
 1. make run_consumer - для прослушивания
 2. make send_message - отправка сообщений
+
+## Роуты
+- {{host}}/products - возвращяет список всех продуктов из БД
+
+- {{host}}/products/{sku} - возвращяет продукт по идентификаторы из БД
+
+- {{host}}/products/by-name/{name} - возвращает продукты по имени из эластика
+
+- {{host}}/products/by-description/{description} - возвращает продукты по их описанию из эластика
+
+- {{host}}/products/by-category/{category} - возвращает продукты по категории из БД
