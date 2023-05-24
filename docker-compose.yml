@@ -1,0 +1,43 @@
+version: "3"
+
+services:
+  nginx_service:
+    image: nginx:latest
+    container_name: nginx_service
+    ports:
+      - 8080:80
+    volumes: 
+      - ./symfony/:/var/www/symfony
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php_service
+      - postgres_service
+    
+  php_service:
+    build:
+      context: .
+      dockerfile: './docker/php/Dockerfile'
+    container_name: php_service
+    ports:
+      - 9000:9000
+    volumes:
+      - ./symfony:/var/www/symfony
+    links:
+      - postgres_service
+    environment:
+      DATABASE_URL: "postgresql://guest:qpass1@postgres_service:5432/akson_products?serverVersion=15&charset=utf8"
+    
+  postgres_service:
+    image: postgres:latest
+    container_name: postgres_service
+    restart: always
+    ports:
+      - 15432:5432
+    volumes:
+      - ./data/db/:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 'qpass1'
+      POSTGRES_USER: 'guest'
+      POSTGRES_DB: 'akson_products'
+
+  
