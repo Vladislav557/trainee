@@ -107,6 +107,7 @@ class ProductService
     private function toArray(Product $product): array
     {
         return [
+            'id' => $product->getId(),
             'product_sku' => $product->getProductSku(),
             'name' => $product->getName(),
             'price' => $product->getPrice(),

@@ -4,14 +4,17 @@ namespace App\Service\ElasticService;
 
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
+use App\Service\ProductService\ProductService;
 
 class ElasticService
 {
     private Client $client;
     private string $index;
+    private ProductService $productService;
 
-    public function __construct()
+    public function __construct(ProductService $productService)
     {
+        $this->productService = $productService;
         $this->index = $_ENV['ELASTICSEARCH_INDEX'];
         $this->client = ClientBuilder::create()
             -> setHosts([$_ENV['ELASTICSEARCH_HOSTS']])
@@ -30,7 +33,10 @@ class ElasticService
             'body' => [
                 'query' => [
                     'match' => [
-                        'name' => $name
+                        'name' => [
+                            'query' => $name,
+                            "fuzziness" => 1
+                        ]
                     ]
                 ],
                 'size' => 10000
@@ -40,8 +46,17 @@ class ElasticService
 
         try {
             
-            $response = $this->client->search($params);
-            return $response['hits']['hits'];
+            $products = $this->client->search($params);
+            $result = [];
+            foreach ($products['hits']['hits'] as $product) {
+                $sku = $product['_source']['product_sku'];
+
+                $result[] = [
+                    'id' => $this->productService->getProductBySku($sku)['id'],
+                    ...$product['_source']
+                ];
+            }
+            return $result;
 
         } catch (\Throwable $th) {
 
@@ -57,7 +72,10 @@ class ElasticService
             'body' => [
                 'query' => [
                     'match' => [
-                        'detail_text' => $description
+                        'detail_text' => [
+                            'query' => $description,
+                            "fuzziness" => 1
+                        ]
                     ]
                 ]
             ],
@@ -66,8 +84,17 @@ class ElasticService
 
         try {
             
-            $response = $this->client->search($params);
-            return $response['hits']['hits'];
+            $products = $this->client->search($params);
+            $result = [];
+            foreach ($products['hits']['hits'] as $product) {
+                $sku = $product['_source']['product_sku'];
+
+                $result[] = [
+                    'id' => $this->productService->getProductBySku($sku)['id'],
+                    ...$product['_source']
+                ];
+            }
+            return $result;
 
         } catch (\Throwable $th) {
 

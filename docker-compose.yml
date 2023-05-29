@@ -19,7 +19,7 @@ services:
       dockerfile: './docker/php/Dockerfile'
     container_name: php_service
     ports:
-      - 9000:9000
+      - 9001:9000
     volumes:
       - ./symfony:/var/www/symfony
     links:
