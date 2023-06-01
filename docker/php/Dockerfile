@@ -16,15 +16,15 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     lsb-release \
     ca-certificates \
-    gnupg 
+    gnupg
 
-RUN docker-php-ext-install pdo pdo_pgsql intl gd zip opcache sockets curl 
+RUN docker-php-ext-install pdo pdo_pgsql intl gd zip opcache sockets curl
 
 RUN pecl install apcu \
     && docker-php-ext-enable apcu
 
 
-RUN pecl install rdkafka 
+RUN pecl install rdkafka
 RUN docker-php-ext-enable rdkafka
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

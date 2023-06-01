@@ -13,7 +13,7 @@ use App\Service\ElasticService\ElasticService;
 #[AsMessageHandler]
 class KafkaHandler
 {
-    public function __construct(private ProductService $productService, private CategoryService $categoryService, private DatabaseService $databaseService, private ElasticService $elasticService)
+    public function __construct(private readonly ProductService $productService, private readonly CategoryService $categoryService, private readonly DatabaseService $databaseService, private readonly ElasticService $elasticService)
     {
         
     }
@@ -34,8 +34,6 @@ class KafkaHandler
                 }
 
                 $this->productService->createProduct($incomingMessage, $category);
-
-                print_r('Продукт успешно добавлен: ' . $incomingMessage['product_sku'] . PHP_EOL);
 
                 if ($this->elasticService->checkConnection()) {
                     $product = [

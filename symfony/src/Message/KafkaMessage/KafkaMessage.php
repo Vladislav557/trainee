@@ -4,7 +4,7 @@ namespace App\Message\KafkaMessage;
 
 class KafkaMessage
 {
-    public function __construct(private array $message)
+    public function __construct(private readonly array $message)
     {}
 
     public function getMessage(): array

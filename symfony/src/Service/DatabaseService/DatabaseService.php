@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DatabaseService
 {
-    public function __construct(private EntityManagerInterface $entityManager, private $connection = null)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private $connection = null)
     {
         
     }

@@ -9,7 +9,7 @@ use App\Service\CategoryService\CategoryService;
 
 class ProductService
 {
-    public function __construct(private ProductRepository $productRepository, private ?CategoryService $categoryService)
+    public function __construct(private readonly ProductRepository $productRepository, private readonly ?CategoryService $categoryService)
     {
         
     }

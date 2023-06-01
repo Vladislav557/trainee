@@ -8,17 +8,58 @@ use App\Service\ProductService\ProductService;
 
 class ElasticService
 {
-    private Client $client;
-    private string $index;
-    private ProductService $productService;
+    private readonly Client $client;
+    private readonly string $index;
+    private readonly ProductService $productService;
 
     public function __construct(ProductService $productService)
     {
         $this->productService = $productService;
         $this->index = $_ENV['ELASTICSEARCH_INDEX'];
         $this->client = ClientBuilder::create()
-            -> setHosts([$_ENV['ELASTICSEARCH_HOSTS']])
+            ->setHosts([$_ENV['ELASTICSEARCH_HOSTS']])
             ->build();
+        //$this->createIndex();
+    }
+
+    public function createIndex(): void
+    {
+        $index = [
+            "index" => "trainee_products_index",
+            "body" => [
+                "settings" => [
+                    "number_of_shards" => 2,
+                    "number_of_replicas" => 0
+                ],
+                "mappings" => [
+                    "properties" => [
+                        "id" => [
+                            "type" => "long"
+                        ],
+                        "product_sku" => [
+                            "type" => "text"
+                        ],
+                        "name" => [
+                            "type" => "text"
+                        ],
+                        "price" => [
+                            "type" => "text"
+                        ],
+                        "detail_text" => [
+                            "type" => "text"
+                        ],
+                        "category" => [
+                            "type" => "text"
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $this
+            ->client
+            ->indices()
+            ->create($index);
     }
 
     public function checkConnection(): bool
@@ -85,10 +126,10 @@ class ElasticService
         try {
             
             $products = $this->client->search($params);
+
             $result = [];
             foreach ($products['hits']['hits'] as $product) {
                 $sku = $product['_source']['product_sku'];
-
                 $result[] = [
                     'id' => $this->productService->getProductBySku($sku)['id'],
                     ...$product['_source']
